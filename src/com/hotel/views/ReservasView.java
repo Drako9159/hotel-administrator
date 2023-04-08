@@ -18,10 +18,12 @@ import java.awt.Font;
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
 import java.awt.event.*;
+import java.math.BigDecimal;
 import java.text.Format;
 import java.awt.Toolkit;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -36,12 +38,14 @@ public class ReservasView extends JFrame {
 
     private JPanel contentPane;
     public static JTextField txtValor;
+    public static int costo = 1200;
     public static JDateChooser txtFechaEntrada;
     public static JDateChooser txtFechaSalida;
     public static JComboBox<String> txtFormaPago;
     int xMouse, yMouse;
     private JLabel labelExit;
     private JLabel labelAtras;
+
 
     /**
      * Launch the application.
@@ -198,9 +202,9 @@ public class ReservasView extends JFrame {
             @Override
             public void mouseDragged(MouseEvent e) {
                 headerMouseDragged(e);
-
             }
         });
+
         header.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -258,25 +262,17 @@ public class ReservasView extends JFrame {
         txtFechaEntrada.setBounds(68, 161, 289, 35);
         txtFechaEntrada.getCalendarButton().setBounds(268, 0, 21, 33);
         txtFechaEntrada.setBackground(Color.WHITE);
-        txtFechaEntrada.addPropertyChangeListener("calendar", new PropertyChangeListener() {
+        txtFechaEntrada.setMinSelectableDate(new Date());
+        txtFechaEntrada.addPropertyChangeListener(new PropertyChangeListener() {
             @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                System.out.println("clicked");
+            public void propertyChange(PropertyChangeEvent e) {
+                evaluateValue();
             }
         });
         txtFechaEntrada.setBorder(new LineBorder(SystemColor.window));
         txtFechaEntrada.setDateFormatString("yyyy-MM-dd");
         txtFechaEntrada.setFont(new Font("Roboto", Font.PLAIN, 18));
         panel.add(txtFechaEntrada);
-
-
-        txtFechaEntrada.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                System.out.println("clicked");
-                evaluateValue();
-            }
-        });
 
 
         txtFechaSalida = new JDateChooser();
@@ -286,9 +282,10 @@ public class ReservasView extends JFrame {
         txtFechaSalida.getCalendarButton().setBounds(267, 1, 21, 31);
         txtFechaSalida.setBackground(Color.WHITE);
         txtFechaSalida.setFont(new Font("Roboto", Font.PLAIN, 18));
+        txtFechaSalida.setMinSelectableDate(new Date());
         txtFechaSalida.addPropertyChangeListener(new PropertyChangeListener() {
             public void propertyChange(PropertyChangeEvent evt) {
-                //Activa el evento, después del usuario seleccionar las fechas se debe calcular el valor de la reserva
+                evaluateValue();
             }
         });
         txtFechaSalida.setDateFormatString("yyyy-MM-dd");
@@ -307,16 +304,9 @@ public class ReservasView extends JFrame {
         //lblValor.setBounds(72, 303, 250, 14);
         txtValor.setBorder(javax.swing.BorderFactory.createEmptyBorder());
         txtValor.setColumns(10);
-        txtValor.setText("3000");
         panel.add(txtValor);
 
-        txtFechaSalida.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                System.out.println("clicked");
 
-            }
-        });
         //txtApellido.setBounds(560, 204, 285, 33);
         //txtApellido.setBackground(Color.WHITE);
 
@@ -357,37 +347,26 @@ public class ReservasView extends JFrame {
         labelGuardar.setBounds(0, 0, 122, 35);
         btnsiguiente.add(labelGuardar);
 
-        //actionsForm();
-
-
-    }
-    public void actionsForm(){
-        txtFechaEntrada.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                System.out.println("clicked");
-                evaluateValue();
-            }
-        });
-
-        txtFechaSalida.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                evaluateValue();
-            }
-        });
     }
 
     public void evaluateValue() {
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
-            Date dateBefore = sdf.parse(txtFechaEntrada.getDateFormatString());
-            Date dateAfter = sdf.parse(txtFechaSalida.getDateFormatString());
-            long timeDiff = Math.abs(dateAfter.getTime() - dateBefore.getTime());
-            long daysDiff = TimeUnit.DAYS.convert(timeDiff, TimeUnit.MILLISECONDS);
-            System.out.println("The number of days between dates: " + daysDiff);
+            if (txtFechaEntrada.getDate() != null && txtFechaSalida.getDate() != null) {
+                long diff = txtFechaSalida.getDate().getTime() - txtFechaEntrada.getDate().getTime();
+                long daysDiff = TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
+                System.out.println(daysDiff);
+                Integer costoCalculate = new BigDecimal(daysDiff).intValueExact() * costo;
+                if (costoCalculate <= 0) {
+                    txtFechaEntrada.setCalendar(null);
+                    txtFechaSalida.setCalendar(null);
+                    JOptionPane.showMessageDialog(null, "Seleccione una fecha correcta");
+                    return;
+                }
+                txtValor.setText(costoCalculate.toString() + " $");
+            }
         } catch (Exception e) {
             e.printStackTrace();
+            System.out.println("error");
         }
     }
 

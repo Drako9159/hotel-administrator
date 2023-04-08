@@ -18,4 +18,8 @@ public class ReservationController {
     public void save_reservation(Reservation reservation){
         reservationDAO.saveReservation(reservation);
     }
+    public int delete_reservation(Integer id){
+        return reservationDAO.deleteReservation(id);
+    }
+
 }

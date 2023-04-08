@@ -1,6 +1,5 @@
 package com.hotel.views;
 
-
 import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -22,13 +21,11 @@ import java.awt.Font;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import java.awt.SystemColor;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
+import java.awt.event.*;
 import java.text.Format;
-import java.awt.event.ActionEvent;
 import java.awt.Toolkit;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import javax.swing.SwingConstants;
 import javax.swing.JSeparator;
 
@@ -154,6 +151,7 @@ public class RegistroHuesped extends JFrame {
         txtFechaN.getCalendarButton().setIcon(new ImageIcon(RegistroHuesped.class.getResource("/imagenes/icon-reservas.png")));
         txtFechaN.getCalendarButton().setBackground(SystemColor.textHighlight);
         txtFechaN.setDateFormatString("yyyy-MM-dd");
+        txtFechaN.setMaxSelectableDate(new Date());
         contentPane.add(txtFechaN);
 
         txtNacionalidad = new JComboBox();
@@ -199,6 +197,21 @@ public class RegistroHuesped extends JFrame {
         txtTelefono.setColumns(10);
         txtTelefono.setBackground(Color.WHITE);
         txtTelefono.setBorder(javax.swing.BorderFactory.createEmptyBorder());
+        txtTelefono.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e){
+                if(e.getKeyChar() >= '0' && e.getKeyChar() <= '9' || e.getKeyChar() == KeyEvent.VK_BACK_SPACE
+                        || e.getKeyCode() == 46 ){
+                    txtTelefono.setEditable(true);
+                    if(txtTelefono.getText().length() == 10){
+                        txtTelefono.setEditable(false);
+                    }
+                } else {
+                    txtTelefono.setEditable(false);
+                    JOptionPane.showMessageDialog(null, "Ingrese sólo números");
+                }
+            }
+        });
         contentPane.add(txtTelefono);
 
         JLabel lblTitulo = new JLabel("REGISTRO HUÉSPED");
@@ -219,6 +232,18 @@ public class RegistroHuesped extends JFrame {
         txtNreserva.setColumns(10);
         txtNreserva.setBackground(Color.WHITE);
         txtNreserva.setBorder(javax.swing.BorderFactory.createEmptyBorder());
+        txtNreserva.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e){
+                if(e.getKeyChar() >= '0' && e.getKeyChar() <= '9' || e.getKeyChar() == KeyEvent.VK_BACK_SPACE
+                        || e.getKeyCode() == 46 ){
+                    txtNreserva.setEditable(true);
+                } else {
+                    txtNreserva.setEditable(false);
+                    JOptionPane.showMessageDialog(null, "Ingrese sólo números");
+                }
+            }
+        });
         contentPane.add(txtNreserva);
 
         JSeparator separator_1_2 = new JSeparator();
@@ -262,7 +287,25 @@ public class RegistroHuesped extends JFrame {
         btnguardar.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
+                if(txtNombre.getText().isEmpty()){
+                    JOptionPane.showMessageDialog(null, "Por fávor ingrese un nombre");
+                    return;
+                } else if(txtApellido.getText().isEmpty()){
+                    JOptionPane.showMessageDialog(null, "Por fávor ingrese un apellido");
+                    return;
+                } else if(txtTelefono.getText().length() < 10){
+                    JOptionPane.showMessageDialog(null, "Necesita un teléfono válido");
+                    return;
+                } else if(txtFechaN.getDate() == null) {
+                    JOptionPane.showMessageDialog(null, "Ingrese una fecha de nacimiento");
+                    return;
+                }
                 guardar();
+                Exito exito = new Exito();
+                exito.setVisible(true);
+                dispose();
+
+
             }
         });
         btnguardar.setLayout(null);
@@ -346,21 +389,22 @@ public class RegistroHuesped extends JFrame {
         GuestController guestController = new GuestController();
         ReservationController reservationController = new ReservationController();
 
-        var reservation = new Reservation(ReservasView.txtFechaEntrada.getDateFormatString(),
-                ReservasView.txtFechaSalida.getDateFormatString(),
+        var reservation = new Reservation(parseDate(ReservasView.txtFechaEntrada.getDate()),
+                parseDate(ReservasView.txtFechaSalida.getDate()),
                 ReservasView.txtValor.getText(),
                 ReservasView.txtFormaPago.getSelectedItem().toString());
 
         var guest = new Guest(txtNombre.getText(),
-                txtApellido.getText(),
-                txtFechaN.getDateFormatString(),
+                txtApellido.getText(), parseDate(txtFechaN.getDate()),
                 txtNacionalidad.getSelectedItem().toString(),
                 txtTelefono.getText(),
                 Integer.valueOf(txtNreserva.getText()));
 
-
         guestController.save_guest(guest);
         reservationController.save_reservation(reservation);
     }
-
+    public String parseDate(Date date){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        return sdf.format(date).toString();
+    }
 }
