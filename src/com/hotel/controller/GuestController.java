@@ -28,7 +28,14 @@ public class GuestController {
 
     public void save_guest(Guest guest) {
         guestDAO.saveGuest(guest);
+    }
 
+    public int delete_guest(Integer id) {
+        return guestDAO.deleteGuest(id);
+    }
 
+    public int update_guest(Integer id, String first_name, String last_name,
+                            String date_of_birth, String nationality, String telephone, Integer reservation_id) {
+        return guestDAO.updateGuest(id, first_name, last_name, date_of_birth, nationality, telephone, reservation_id);
     }
 }

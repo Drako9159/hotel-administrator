@@ -74,6 +74,40 @@ public class GuestDAO {
                 System.out.println(String.format("Fue insertado el huesped ID %s", guest));
             }
         }
+    }
+
+    public int deleteGuest(Integer id) {
+        try {
+            final PreparedStatement statement = con.prepareStatement("DELETE FROM guests WHERE id = ?");
+            try (statement) {
+                statement.setInt(1, id);
+                statement.execute();
+                return statement.getUpdateCount();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public int updateGuest(Integer id, String first_name, String last_name, String date_of_birth,
+                           String nationality, String telephone, Integer reservation_id) {
+        try {
+            final PreparedStatement statement = con.prepareStatement("UPDATE guests SET first_name= ? , " +
+                    "last_name= ? , date_of_birth= ? , nationality= ? , telephone= ? , reservation_id= ? WHERE id= ? ");
+            try (statement) {
+                statement.setString(1, first_name);
+                statement.setString(2, last_name);
+                statement.setString(3, date_of_birth);
+                statement.setString(4, nationality);
+                statement.setString(5, telephone);
+                statement.setInt(6, reservation_id);
+                statement.setInt(7, id);
+                statement.execute();
+                return statement.getUpdateCount();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
 
     }
 }

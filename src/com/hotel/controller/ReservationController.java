@@ -21,5 +21,8 @@ public class ReservationController {
     public int delete_reservation(Integer id){
         return reservationDAO.deleteReservation(id);
     }
+    public int update_reservation(Integer id, String check_in, String check_out, String value, String payment_method){
+        return reservationDAO.updateReservation(id, check_in, check_out, value, payment_method);
+    }
 
 }

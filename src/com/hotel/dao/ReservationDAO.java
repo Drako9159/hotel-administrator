@@ -3,6 +3,7 @@ package com.hotel.dao;
 
 import com.hotel.modelo.Reservation;
 
+import javax.swing.*;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -79,7 +80,26 @@ public class ReservationDAO {
                 return statement.getUpdateCount();
             }
         } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "No es posible eliminar este elemento");
             throw new RuntimeException(e);
         }
+    }
+    public int updateReservation(Integer id, String check_in, String check_out, String value, String payment_method){
+        try{
+            final PreparedStatement statement = con.prepareStatement("UPDATE reservations SET check_in= ?, "+
+                    "check_out= ?, value= ?, payment_method= ? WHERE id= ? ");
+            try(statement){
+                statement.setString(1, check_in);
+                statement.setString(2, check_out);
+                statement.setString(3, value);
+                statement.setString(4, payment_method);
+                statement.setInt(5, id);
+                statement.execute();
+                return statement.getUpdateCount();
+            }
+        } catch (SQLException e){
+            throw new RuntimeException(e);
+        }
+
     }
 }
