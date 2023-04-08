@@ -38,4 +38,8 @@ public class GuestController {
                             String date_of_birth, String nationality, String telephone, Integer reservation_id) {
         return guestDAO.updateGuest(id, first_name, last_name, date_of_birth, nationality, telephone, reservation_id);
     }
+
+    public List<Guest> search(Integer id){
+        return guestDAO.search(id);
+    }
 }

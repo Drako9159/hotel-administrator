@@ -40,6 +40,32 @@ public class ReservationDAO {
         }
     }
 
+    public List<Reservation> search(Integer id) {
+        List<Reservation> resultado = new ArrayList<>();
+        try {
+            final PreparedStatement statement = con.prepareStatement("SELECT id, check_in, check_out, value, payment_method FROM reservations WHERE id = ? ");
+            try (statement) {
+
+                statement.setInt(1, id);
+                statement.execute();
+                final ResultSet resultSet = statement.getResultSet();
+                try (resultSet) {
+                    while (resultSet.next()) {
+                        Reservation fila = new Reservation(resultSet.getInt("id"),
+                                resultSet.getString("check_in"),
+                                resultSet.getString("check_out"),
+                                resultSet.getString("value"),
+                                resultSet.getString("payment_method"));
+                        resultado.add(fila);
+                    }
+                }
+                return resultado;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void saveReservation(Reservation reservation) {
         try (con) {
             final PreparedStatement statement = con.prepareStatement("INSERT INTO reservations " +

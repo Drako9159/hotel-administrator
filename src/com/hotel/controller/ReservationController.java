@@ -24,5 +24,8 @@ public class ReservationController {
     public int update_reservation(Integer id, String check_in, String check_out, String value, String payment_method){
         return reservationDAO.updateReservation(id, check_in, check_out, value, payment_method);
     }
+    public List<Reservation> search(Integer id){
+        return reservationDAO.search(id);
+    }
 
 }

@@ -95,14 +95,11 @@ public class Busqueda extends JFrame {
         panel.addTab("Reservas", new ImageIcon(Busqueda.class.getResource("/imagenes/reservado.png")), scroll_table, null);
         scroll_table.setVisible(true);
 
-
         tbHuespedes = new JTable();
         tbHuespedes.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         tbHuespedes.setFont(new Font("Roboto", Font.PLAIN, 13));
         modeloHuesped = (DefaultTableModel) tbHuespedes.getModel();
         modeloHuesped.addColumn("NÚMERO DE HUESPED");
-
-
         modeloHuesped.addColumn("NOMBRE");
         modeloHuesped.addColumn("APELLIDO");
         modeloHuesped.addColumn("FECHA DE NACIMIENTO");
@@ -230,6 +227,28 @@ public class Busqueda extends JFrame {
         btnbuscar.setBackground(new Color(12, 138, 199));
         btnbuscar.setBounds(748, 125, 122, 35);
         btnbuscar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnbuscar.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int value = panel.getSelectedIndex();
+
+                if (value == 0) {
+                    if(txtBuscar.getText().isEmpty()){
+                        cleanTable(modelo);
+                        chargeTableReservations();
+                        return;
+                    }
+                    searchReservation(Integer.parseInt(txtBuscar.getText()));
+                } else if (value == 1) {
+                    if(txtBuscar.getText().isEmpty()){
+                        cleanTable(modeloHuesped);
+                        chargeTableGuests();
+                        return;
+                    }
+                    searchGuest(Integer.parseInt(txtBuscar.getText()));
+                }
+            }
+        });
         contentPane.add(btnbuscar);
 
         JLabel lblBuscar = new JLabel("BUSCAR");
@@ -311,6 +330,30 @@ public class Busqueda extends JFrame {
                 e.getValue(),
                 e.getPayment_method()}));
     }
+    private void searchReservation(Integer id){
+        ReservationController reservationController = new ReservationController();
+        if(reservationController.search(id).isEmpty()){
+            JOptionPane.showMessageDialog(this, "No se encontraron resultados con ese ID");
+            return;
+        }
+        cleanTable(modelo);
+        reservationController.search(id).forEach(e -> this.modelo.addRow(new Object[]{e.getId(),
+                e.getCheck_in(),
+                e.getCheck_out(),
+                e.getValue(),
+                e.getPayment_method()}));
+    }
+    private void searchGuest(Integer id){
+        GuestController guestController = new GuestController();
+        if(guestController.search(id).isEmpty()){
+            JOptionPane.showMessageDialog(this, "No se encontraron resultados con ese ID");
+            return;
+        }
+        cleanTable(modeloHuesped);
+        guestController.search(id).forEach(e -> this.modeloHuesped.addRow(new Object[]{e.getId(),
+                e.getFirst_name(), e.getLast_name(), e.getDate_of_birth(), e.getNationality(), e.getTelephone(),
+                e.getReservation_id()}));
+    }
 
     public void chargeTableGuests() {
         GuestController guest = new GuestController();
@@ -319,8 +362,8 @@ public class Busqueda extends JFrame {
                 e.getReservation_id()}));
     }
 
-    private void cleanTable() {
-        modelo.getDataVector().clear();
+    private void cleanTable(DefaultTableModel model) {
+        model.getDataVector().clear();
     }
 
     private boolean haveSelectedRow(JTable table) {

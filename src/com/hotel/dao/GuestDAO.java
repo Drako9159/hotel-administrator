@@ -42,6 +42,34 @@ public class GuestDAO {
         }
     }
 
+    public List<Guest> search(Integer id) {
+        List<Guest> resultado = new ArrayList<>();
+        try {
+            final PreparedStatement statement = con.prepareStatement("SELECT id, " +
+                    "first_name, last_name, date_of_birth, nationality, telephone, reservation_id FROM guests WHERE id = ?");
+            try (statement) {
+                statement.setInt(1, id);
+                statement.execute();
+                final ResultSet resultSet = statement.getResultSet();
+                try (resultSet) {
+                    while (resultSet.next()) {
+                        Guest fila = new Guest(resultSet.getInt("id"),
+                                resultSet.getString("first_name"),
+                                resultSet.getString("last_name"),
+                                resultSet.getString("date_of_birth"),
+                                resultSet.getString("nationality"),
+                                resultSet.getString("telephone"),
+                                resultSet.getInt("reservation_id"));
+                        resultado.add(fila);
+                    }
+                }
+                return resultado;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void saveGuest(Guest guest) {
         try (con) {
             final PreparedStatement statement = con.prepareStatement("INSERT INTO guests " +
@@ -110,4 +138,5 @@ public class GuestDAO {
         }
 
     }
+
 }
