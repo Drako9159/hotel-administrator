@@ -1,13 +1,12 @@
 package com.hotel.views;
 
-import com.hotel.test.BackgroundTask;
-
 import javax.swing.*;
 import java.awt.*;
 
 public class DialogLoading {
     private JDialog jDialog;
-    public DialogLoading(){
+
+    public DialogLoading() {
         jDialog = new JDialog();
         jDialog.setLayout(new GridBagLayout());
         jDialog.add(new JLabel("Por fávor espera..."));
@@ -18,9 +17,11 @@ public class DialogLoading {
         jDialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
         jDialog.setLocationRelativeTo(null);
     }
+
     public void show() {
         jDialog.setVisible(true);
     }
+
     public void hide() {
         jDialog.setVisible(false);
     }

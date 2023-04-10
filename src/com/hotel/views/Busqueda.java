@@ -117,9 +117,11 @@ public class Busqueda extends JFrame {
         JScrollPane scroll_tableHuespedes = new JScrollPane(tbHuespedes);
         panel.addTab("Huéspedes", new ImageIcon(Busqueda.class.getResource("/imagenes/pessoas.png")), scroll_tableHuespedes, null);
         scroll_tableHuespedes.setVisible(true);
-
+/*
         chargeTableReservations();
-        chargeTableGuests();
+        chargeTableGuests();*/
+
+        activeThreads();
 
         JLabel lblNewLabel_2 = new JLabel("");
         lblNewLabel_2.setIcon(new ImageIcon(Busqueda.class.getResource("/imagenes/Ha-100px.png")));
@@ -328,14 +330,21 @@ public class Busqueda extends JFrame {
         Thread thread2 = new Thread(new Runnable() {
             @Override
             public void run() {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                chargeTableReservations();
+                dialogLoading.hide();
             }
         });
         thread2.start();
+
+        Thread thread3 = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                chargeTableGuests();
+                dialogLoading.hide();
+
+            }
+        });
+        thread3.start();
     }
 
     private void headerMouseDragged(java.awt.event.MouseEvent evt) {
@@ -355,7 +364,8 @@ public class Busqueda extends JFrame {
     private void searchReservation(Integer id){
         ReservationController reservationController = new ReservationController();
         if(reservationController.search(id).isEmpty()){
-            JOptionPane.showMessageDialog(this, "No se encontraron resultados con ese ID");
+            //JOptionPane.showMessageDialog(this, "No se encontraron resultados con ese ID");
+            new ToastInfo("Sin resultados");
             return;
         }
         cleanTable(modelo);
@@ -368,7 +378,8 @@ public class Busqueda extends JFrame {
     private void searchGuest(Integer id){
         GuestController guestController = new GuestController();
         if(guestController.search(id).isEmpty()){
-            JOptionPane.showMessageDialog(this, "No se encontraron resultados con ese ID");
+            //JOptionPane.showMessageDialog(this, "No se encontraron resultados con ese ID");
+            new ToastInfo("Sin resultados");
             return;
         }
         cleanTable(modeloHuesped);
@@ -394,7 +405,8 @@ public class Busqueda extends JFrame {
 
     private void deleteReservation(JTable table, DefaultTableModel model) {
         if (haveSelectedRow(table)) {
-            JOptionPane.showMessageDialog(this, "Por favor, elije un item");
+            //JOptionPane.showMessageDialog(this, "Por favor, elije un item");
+            new ToastInfo("Elige un item");
             return;
         }
         Optional.ofNullable(model.getValueAt(table.getSelectedRow(), table.getSelectedColumn()))
@@ -403,13 +415,16 @@ public class Busqueda extends JFrame {
                     ReservationController reservationController = new ReservationController();
                     int cantidadEliminada = reservationController.delete_reservation(id);
                     model.removeRow(table.getSelectedRow());
-                    JOptionPane.showMessageDialog(this, cantidadEliminada + " Item eliminado con éxito!");
-                }, () -> JOptionPane.showMessageDialog(this, "Por favor, elije un item"));
+                    //JOptionPane.showMessageDialog(this, cantidadEliminada + " Item eliminado con éxito!");
+                    new ToastInfo(cantidadEliminada +" eliminado con éxito!");
+                }, () ->  //JOptionPane.showMessageDialog(this, "Por favor, elije un item")//
+                        new ToastInfo("Elige un item") );
     }
 
     private void deleteGuest(JTable table, DefaultTableModel model) {
         if (haveSelectedRow(table)) {
-            JOptionPane.showMessageDialog(this, "Por favor, elije un item");
+            //JOptionPane.showMessageDialog(this, "Por favor, elije un item");
+            new ToastInfo("Elige un item");
             return;
         }
         Optional.ofNullable(model.getValueAt(table.getSelectedRow(), table.getSelectedColumn()))
@@ -418,13 +433,16 @@ public class Busqueda extends JFrame {
                     GuestController guestController = new GuestController();
                     int cantidadEliminada = guestController.delete_guest(id);
                     model.removeRow(table.getSelectedRow());
-                    JOptionPane.showMessageDialog(this, cantidadEliminada + " Item eliminado con éxito!");
-                }, () -> JOptionPane.showMessageDialog(this, "Por favor, elije un item"));
+                    //JOptionPane.showMessageDialog(this, cantidadEliminada + " Item eliminado con éxito!");
+                    new ToastInfo(cantidadEliminada +" eliminado con éxito!");
+                }, () ->//JOptionPane.showMessageDialog(this, "Por favor, elije un item")
+                        new ToastInfo("Elige un item"));
     }
 
     private void updateReservation(JTable table, DefaultTableModel model) {
         if (haveSelectedRow(table)) {
-            JOptionPane.showMessageDialog(this, "Por favor, elije un item");
+            //JOptionPane.showMessageDialog(this, "Por favor, elije un item");
+            new ToastInfo("Elige un item");
             return;
         }
 
@@ -437,13 +455,16 @@ public class Busqueda extends JFrame {
                     String payment_method = (String) model.getValueAt(table.getSelectedRow(), 4);
                     ReservationController reservationController = new ReservationController();
                     int cantidadActualizada = reservationController.update_reservation(id, check_in, check_out, value, payment_method);
-                    JOptionPane.showMessageDialog(this, cantidadActualizada + " Item actualizado con éxito!");
-                }, () -> JOptionPane.showMessageDialog(this, "Por favor, elije un item"));
+                    //JOptionPane.showMessageDialog(this, cantidadActualizada + " Item actualizado con éxito!");
+                    new ToastInfo(cantidadActualizada +" actualizado con éxito!");
+                }, () -> //JOptionPane.showMessageDialog(this, "Por favor, elije un item")
+                        new ToastInfo("Elige un item"));
     }
 
     private void updateGuest(JTable table, DefaultTableModel model) {
         if (haveSelectedRow(table)) {
-            JOptionPane.showMessageDialog(this, "Por favor, elije un item");
+            //JOptionPane.showMessageDialog(this, "Por favor, elije un item");
+            new ToastInfo("Elige un item");
             return;
         }
         Optional.ofNullable(model.getValueAt(table.getSelectedRow(), table.getSelectedColumn()))
@@ -458,7 +479,9 @@ public class Busqueda extends JFrame {
                     GuestController guestController = new GuestController();
                     int cantidadActualizada = guestController.update_guest(id, first_name, last_name, date_of_birth,
                             nationality, telephone, reservation_id);
-                    JOptionPane.showMessageDialog(this, cantidadActualizada + " Item actualizado con éxito!");
-                }, () -> JOptionPane.showMessageDialog(this, "Por favor, elije un item"));
+                    //JOptionPane.showMessageDialog(this, cantidadActualizada + " Item actualizado con éxito!");
+                    new ToastInfo(cantidadActualizada +" actualizado con éxito!");
+                }, () -> //JOptionPane.showMessageDialog(this, "Por favor, elije un item")
+                        new ToastInfo("Elige un item"));
     }
 }

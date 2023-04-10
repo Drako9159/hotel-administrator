@@ -208,7 +208,8 @@ public class RegistroHuesped extends JFrame {
                     }
                 } else {
                     txtTelefono.setEditable(false);
-                    JOptionPane.showMessageDialog(null, "Ingrese sólo números");
+                    //JOptionPane.showMessageDialog(null, "Ingrese sólo números");
+                    new ToastInfo("Ingresa sólo números");
                 }
             }
         });
@@ -240,7 +241,8 @@ public class RegistroHuesped extends JFrame {
                     txtNreserva.setEditable(true);
                 } else {
                     txtNreserva.setEditable(false);
-                    JOptionPane.showMessageDialog(null, "Ingrese sólo números");
+                    //JOptionPane.showMessageDialog(null, "Ingrese sólo números");
+                    new ToastInfo("Ingresa sólo números");
                 }
             }
         });
@@ -288,16 +290,23 @@ public class RegistroHuesped extends JFrame {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (txtNombre.getText().isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "Por fávor ingrese un nombre");
+                    //JOptionPane.showMessageDialog(null, "Por fávor ingrese un nombre");
+                    new ToastInfo("Ingresa un nombre");
                     return;
                 } else if (txtApellido.getText().isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "Por fávor ingrese un apellido");
+                    //JOptionPane.showMessageDialog(null, "Por fávor ingrese un apellido");
+                    new ToastInfo("Ingresa un apellido");
                     return;
                 } else if (txtTelefono.getText().length() < 10) {
-                    JOptionPane.showMessageDialog(null, "Necesita un teléfono válido");
+                    //JOptionPane.showMessageDialog(null, "Necesita un teléfono válido");
+                    new ToastInfo("Ingresa un teléfono");
                     return;
                 } else if (txtFechaN.getDate() == null) {
-                    JOptionPane.showMessageDialog(null, "Ingrese una fecha de nacimiento");
+                    //JOptionPane.showMessageDialog(null, "Ingrese una fecha de nacimiento");
+                    new ToastInfo("Ingresa fecha nacimiento");
+                    return;
+                } else if (txtNreserva.getText().isEmpty()) {
+                    new ToastInfo("Ingresa una reserva");
                     return;
                 }
                 guardar();
@@ -383,31 +392,50 @@ public class RegistroHuesped extends JFrame {
     /// Aquí voy
 
     public void guardar() {
-        GuestController guestController = new GuestController();
-        ReservationController reservationController = new ReservationController();
-        AtomicBoolean checkReservation = new AtomicBoolean();
+        DialogLoading dialogLoading = new DialogLoading();
 
-        reservationController.listar().forEach(e -> {
-            if (e.getId().equals(Integer.valueOf(txtNreserva.getText()))) {
-                checkReservation.set(true);
+        Thread thread1 = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                dialogLoading.show();
             }
         });
-        if (!checkReservation.get()){
-            JOptionPane.showMessageDialog(this, "La reserva no existe");
-            return;
-        }
+        thread1.start();
 
-        var guest = new Guest(txtNombre.getText(),
-                txtApellido.getText(), parseDate(txtFechaN.getDate()),
-                txtNacionalidad.getSelectedItem().toString(),
-                txtTelefono.getText(),
-                Integer.valueOf(txtNreserva.getText()));
-        guestController.save_guest(guest);
 
-        Exito exito = new Exito();
-        exito.setVisible(true);
-        dispose();
+        Thread thread2 = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                GuestController guestController = new GuestController();
+                ReservationController reservationController = new ReservationController();
+                AtomicBoolean checkReservation = new AtomicBoolean();
 
+                reservationController.listar().forEach(e -> {
+                    if (e.getId().equals(Integer.valueOf(txtNreserva.getText()))) {
+                        checkReservation.set(true);
+                    }
+                });
+                dialogLoading.hide();
+
+                if (!checkReservation.get()) {
+                    //JOptionPane.showMessageDialog(this, "La reserva no existe");
+                    new ToastInfo("La reserva no existe");
+                    return;
+                }
+
+                var guest = new Guest(txtNombre.getText(),
+                        txtApellido.getText(), parseDate(txtFechaN.getDate()),
+                        txtNacionalidad.getSelectedItem().toString(),
+                        txtTelefono.getText(),
+                        Integer.valueOf(txtNreserva.getText()));
+                guestController.save_guest(guest);
+
+                Exito exito = new Exito();
+                exito.setVisible(true);
+                dispose();
+            }
+        });
+        thread2.start();
     }
 
     public String parseDate(Date date) {

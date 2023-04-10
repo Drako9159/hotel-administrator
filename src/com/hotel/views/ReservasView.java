@@ -7,18 +7,12 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import java.awt.SystemColor;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.ImageIcon;
 import java.awt.Color;
 import javax.swing.JTextField;
 
-import com.hotel.controller.GuestController;
 import com.hotel.controller.ReservationController;
-import com.hotel.modelo.Guest;
 import com.hotel.modelo.Reservation;
-import com.hotel.test.DatabaseInsertionTask;
-import com.hotel.test.ThreadLoader;
-import com.hotel.test.WaitingDialog;
 import com.toedter.calendar.JDateChooser;
 
 import java.awt.Font;
@@ -26,18 +20,12 @@ import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
 import java.awt.event.*;
 import java.math.BigDecimal;
-import java.text.Format;
 import java.awt.Toolkit;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
-import java.util.Timer;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
@@ -356,7 +344,8 @@ public class ReservasView extends JFrame {
                     registro.setVisible(true);
                     dispose();
                 } else {
-                    JOptionPane.showMessageDialog(null, "Debes llenar todos los campos.");
+                    //JOptionPane.showMessageDialog(null, "Debes llenar todos los campos.");
+                    new ToastInfo("Faltan fechas");
                 }
             }
         });
@@ -378,7 +367,6 @@ public class ReservasView extends JFrame {
 
     public void activeThreads(){
         DialogLoading dialogLoading = new DialogLoading();
-        ToastInfo toastInfo = new ToastInfo("Se añadió la reserva");
 
         Thread thread1 = new Thread(new Runnable() {
             @Override
@@ -393,13 +381,7 @@ public class ReservasView extends JFrame {
             public void run() {
                 saveReservation();
                 dialogLoading.hide();
-                toastInfo.show();
-                try {
-                    Thread.sleep(2000);
-                    toastInfo.hide();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                new ToastInfo("Se añadió la reserva");
             }
         });
         thread2.start();
@@ -432,7 +414,8 @@ public class ReservasView extends JFrame {
                 if (costoCalculate <= 0) {
                     txtFechaEntrada.setCalendar(null);
                     txtFechaSalida.setCalendar(null);
-                    JOptionPane.showMessageDialog(null, "Seleccione una fecha correcta");
+                    //JOptionPane.showMessageDialog(null, "Seleccione una fecha correcta");
+                    new ToastInfo("La fecha es incorrecta");
                     return;
                 }
                 txtValor.setText(costoCalculate.toString() + " $");
