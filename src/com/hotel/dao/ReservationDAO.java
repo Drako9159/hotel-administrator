@@ -36,6 +36,7 @@ public class ReservationDAO {
                 return resultado;
             }
         } catch (SQLException e) {
+
             throw new RuntimeException(e);
         }
     }
@@ -75,6 +76,7 @@ public class ReservationDAO {
                 registerExect(reservation, statement);
             }
         } catch (SQLException e) {
+
             throw new RuntimeException(e);
         }
 
@@ -94,7 +96,6 @@ public class ReservationDAO {
                 System.out.println(String.format("Fue insertada la reserva ID %s", reservation));
             }
         }
-
     }
 
     public int deleteReservation(Integer id) {

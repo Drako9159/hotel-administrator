@@ -12,7 +12,7 @@ La aplicación es simple y solo requiere ejecutar el archivo hotel-admin.jar y t
 
 La autenticación es simple no hay medidas de seguridad, solo se debe ingresar el usuario y contraseña, el usuario por defecto es admin y la contraseña es admin, una vez autenticado se puede acceder a la aplicación.
 
-La aplicación evalúa el valor de la reserva de manera automática considerando las fechas de entrada y salida, el valor por día es de 1200, para cambiar este valor es necesario editar el archivo config.properties que se encuentra en la carpeta database, en este archivo se encuentra la configuración de la base de datos y el valor por día.
+La aplicación evalúa el valor de la reserva de manera automática considerando las fechas de entrada y salida, el valor por día es de 1200, para cambiar este valor es necesario editar el archivo config.properties que se encuentra en la carpeta config, en este archivo se encuentra la configuración del valor.
 
 ![firtsgit](./lib/gif1.gif)
 
