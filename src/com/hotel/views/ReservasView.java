@@ -16,6 +16,9 @@ import com.hotel.controller.GuestController;
 import com.hotel.controller.ReservationController;
 import com.hotel.modelo.Guest;
 import com.hotel.modelo.Reservation;
+import com.hotel.test.DatabaseInsertionTask;
+import com.hotel.test.ThreadLoader;
+import com.hotel.test.WaitingDialog;
 import com.toedter.calendar.JDateChooser;
 
 import java.awt.Font;
@@ -31,6 +34,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Timer;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.JSeparator;
@@ -346,7 +351,7 @@ public class ReservasView extends JFrame {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (ReservasView.txtFechaEntrada.getDate() != null && ReservasView.txtFechaSalida.getDate() != null) {
-                    saveReservation();
+                    activeThreads();
                     RegistroHuesped registro = new RegistroHuesped();
                     registro.setVisible(true);
                     dispose();
@@ -367,8 +372,39 @@ public class ReservasView extends JFrame {
         labelGuardar.setFont(new Font("Roboto", Font.PLAIN, 18));
         labelGuardar.setBounds(0, 0, 122, 35);
         btnguardar.add(labelGuardar);
-
     }
+
+
+
+    public void activeThreads(){
+        DialogLoading dialogLoading = new DialogLoading();
+        ToastInfo toastInfo = new ToastInfo("Se añadió la reserva");
+
+        Thread thread1 = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                dialogLoading.show();
+            }
+        });
+        thread1.start();
+
+        Thread thread2 = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                saveReservation();
+                dialogLoading.hide();
+                toastInfo.show();
+                try {
+                    Thread.sleep(2000);
+                    toastInfo.hide();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        thread2.start();
+    }
+
 
     public void saveReservation() {
         ReservationController reservationController = new ReservationController();
@@ -377,8 +413,9 @@ public class ReservasView extends JFrame {
                 ReservasView.txtValor.getText(),
                 ReservasView.txtFormaPago.getSelectedItem().toString());
         reservationController.save_reservation(reservation);
-        JOptionPane.showMessageDialog(null, "Se añadió una nueva reserva");
-        dispose();
+
+        //JOptionPane.showMessageDialog(null, "Se añadió una nueva reserva");
+        //dispose();
     }
 
     public String parseDate(Date date) {

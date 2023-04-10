@@ -315,6 +315,28 @@ public class Busqueda extends JFrame {
         xMouse = evt.getX();
         yMouse = evt.getY();
     }
+    public void activeThreads(){
+        DialogLoading dialogLoading = new DialogLoading();
+        Thread thread1 = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                dialogLoading.show();
+            }
+        });
+        thread1.start();
+
+        Thread thread2 = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        thread2.start();
+    }
 
     private void headerMouseDragged(java.awt.event.MouseEvent evt) {
         int x = evt.getXOnScreen();

@@ -1,21 +1,27 @@
 package com.hotel.views;
 
+import com.hotel.test.BackgroundTask;
+
 import javax.swing.*;
 import java.awt.*;
 
 public class DialogLoading {
-
-    public DialogLoading(Boolean isActive){
-        JDialog jDialog = new JDialog();
+    private JDialog jDialog;
+    public DialogLoading(){
+        jDialog = new JDialog();
         jDialog.setLayout(new GridBagLayout());
-        jDialog.add(new JLabel("Please wait..."));
+        jDialog.add(new JLabel("Por fávor espera..."));
         jDialog.setMinimumSize(new Dimension(150, 50));
         jDialog.setResizable(false);
-        jDialog.setModal(false);
+        jDialog.setModal(true);
         jDialog.setUndecorated(true);
-        jDialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        jDialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
         jDialog.setLocationRelativeTo(null);
-        jDialog.setVisible(isActive);
     }
-
+    public void show() {
+        jDialog.setVisible(true);
+    }
+    public void hide() {
+        jDialog.setVisible(false);
+    }
 }
