@@ -7,9 +7,10 @@ public class TestProperties {
     public static void main(String[] args) {
         Properties props = new Properties();
         try{
-            props.load(new FileInputStream("database/config.properties"));
-            String dayValue = props.getProperty("app.dayValue");
-            System.out.println(dayValue);
+            //props.load(this.getClass().getResourceAsStream("/config/config.properties"));
+            //props.load(new FileInputStream("database/config.properties"));
+            //String dayValue = props.getProperty("app.dayValue");
+            //System.out.println(dayValue);
 
         } catch (Exception e){
             e.printStackTrace();

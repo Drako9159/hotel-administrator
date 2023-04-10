@@ -19,6 +19,7 @@ import java.awt.Font;
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
 import java.awt.event.*;
+import java.io.File;
 import java.io.FileInputStream;
 import java.math.BigDecimal;
 import java.awt.Toolkit;
@@ -411,7 +412,9 @@ public class ReservasView extends JFrame {
         String dayValue = "500";
         Properties props = new Properties();
         try{
-            props.load(new FileInputStream("database/config.properties"));
+
+            //props.load(new FileInputStream(new File("/config/config.properties")));
+            props.load(this.getClass().getResourceAsStream("/config/config.properties"));
             dayValue = props.getProperty("app.dayValue");
         } catch (Exception e){
             e.printStackTrace();
