@@ -19,12 +19,14 @@ import java.awt.Font;
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
 import java.awt.event.*;
+import java.io.FileInputStream;
 import java.math.BigDecimal;
 import java.awt.Toolkit;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
@@ -36,7 +38,7 @@ public class ReservasView extends JFrame {
 
     private JPanel contentPane;
     public static JTextField txtValor;
-    public static int costo = 1200;
+    //public static int costo = 1200;
     public static JDateChooser txtFechaEntrada;
     public static JDateChooser txtFechaSalida;
     public static JComboBox<String> txtFormaPago;
@@ -406,11 +408,19 @@ public class ReservasView extends JFrame {
     }
 
     public void evaluateValue() {
+        String dayValue = "500";
+        Properties props = new Properties();
+        try{
+            props.load(new FileInputStream("database/config.properties"));
+            dayValue = props.getProperty("app.dayValue");
+        } catch (Exception e){
+            e.printStackTrace();
+        }
         try {
             if (txtFechaEntrada.getDate() != null && txtFechaSalida.getDate() != null) {
                 long diff = txtFechaSalida.getDate().getTime() - txtFechaEntrada.getDate().getTime();
                 long daysDiff = TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
-                Integer costoCalculate = new BigDecimal(daysDiff).intValueExact() * costo;
+                Integer costoCalculate = new BigDecimal(daysDiff).intValueExact() * Integer.valueOf(dayValue);
                 if (costoCalculate <= 0) {
                     txtFechaEntrada.setCalendar(null);
                     txtFechaSalida.setCalendar(null);
