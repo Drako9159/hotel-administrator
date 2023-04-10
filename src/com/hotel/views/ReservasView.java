@@ -414,6 +414,7 @@ public class ReservasView extends JFrame {
                 if (costoCalculate <= 0) {
                     txtFechaEntrada.setCalendar(null);
                     txtFechaSalida.setCalendar(null);
+                    txtValor.setText("");
                     //JOptionPane.showMessageDialog(null, "Seleccione una fecha correcta");
                     new ToastInfo("La fecha es incorrecta");
                     return;

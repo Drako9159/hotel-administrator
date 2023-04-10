@@ -1,6 +1,7 @@
 package com.hotel.views;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 public class ToastInfo {
@@ -16,6 +17,8 @@ public class ToastInfo {
         jDialogToast.setUndecorated(true);
         jDialogToast.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
         jDialogToast.setLocationRelativeTo(null);
+
+
 
         Thread thread1 = new Thread(new Runnable() {
             @Override

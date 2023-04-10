@@ -62,6 +62,7 @@ public class Busqueda extends JFrame {
         setLocationRelativeTo(null);
         setUndecorated(true);
 
+
         txtBuscar = new JTextField();
         txtBuscar.setBounds(536, 127, 193, 31);
         txtBuscar.setBorder(javax.swing.BorderFactory.createEmptyBorder());
@@ -107,11 +108,10 @@ public class Busqueda extends JFrame {
         modeloHuesped.addColumn("TELEFONO");
         modeloHuesped.addColumn("NÚMERO DE RESERVA");
 
-/*
+        /*
         int nonEditableColumnIndex = 2; // ejemplo: columna 2 no editable
-        .getColumnModel().getColumn(nonEditableColumnIndex).setCellEditor(null);
-*/
-
+        tbHuespedes.getColumnModel().getColumn(nonEditableColumnIndex).setCellEditor(null);
+        */
 
 
         JScrollPane scroll_tableHuespedes = new JScrollPane(tbHuespedes);
@@ -120,8 +120,10 @@ public class Busqueda extends JFrame {
 /*
         chargeTableReservations();
         chargeTableGuests();*/
+        chargeTableReservations();
+        chargeTableGuests();
 
-        activeThreads();
+        //activeThreads();
 
         JLabel lblNewLabel_2 = new JLabel("");
         lblNewLabel_2.setIcon(new ImageIcon(Busqueda.class.getResource("/imagenes/Ha-100px.png")));
@@ -133,9 +135,9 @@ public class Busqueda extends JFrame {
             @Override
             public void mouseDragged(MouseEvent e) {
                 headerMouseDragged(e);
-
             }
         });
+
         header.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -235,14 +237,14 @@ public class Busqueda extends JFrame {
                 int value = panel.getSelectedIndex();
 
                 if (value == 0) {
-                    if(txtBuscar.getText().isEmpty()){
+                    if (txtBuscar.getText().isEmpty()) {
                         cleanTable(modelo);
                         chargeTableReservations();
                         return;
                     }
                     searchReservation(Integer.parseInt(txtBuscar.getText()));
                 } else if (value == 1) {
-                    if(txtBuscar.getText().isEmpty()){
+                    if (txtBuscar.getText().isEmpty()) {
                         cleanTable(modeloHuesped);
                         chargeTableGuests();
                         return;
@@ -317,35 +319,7 @@ public class Busqueda extends JFrame {
         xMouse = evt.getX();
         yMouse = evt.getY();
     }
-    public void activeThreads(){
-        DialogLoading dialogLoading = new DialogLoading();
-        Thread thread1 = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                dialogLoading.show();
-            }
-        });
-        thread1.start();
 
-        Thread thread2 = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                chargeTableReservations();
-                dialogLoading.hide();
-            }
-        });
-        thread2.start();
-
-        Thread thread3 = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                chargeTableGuests();
-                dialogLoading.hide();
-
-            }
-        });
-        thread3.start();
-    }
 
     private void headerMouseDragged(java.awt.event.MouseEvent evt) {
         int x = evt.getXOnScreen();
@@ -361,9 +335,10 @@ public class Busqueda extends JFrame {
                 e.getValue(),
                 e.getPayment_method()}));
     }
-    private void searchReservation(Integer id){
+
+    private void searchReservation(Integer id) {
         ReservationController reservationController = new ReservationController();
-        if(reservationController.search(id).isEmpty()){
+        if (reservationController.search(id).isEmpty()) {
             //JOptionPane.showMessageDialog(this, "No se encontraron resultados con ese ID");
             new ToastInfo("Sin resultados");
             return;
@@ -375,9 +350,10 @@ public class Busqueda extends JFrame {
                 e.getValue(),
                 e.getPayment_method()}));
     }
-    private void searchGuest(Integer id){
+
+    private void searchGuest(Integer id) {
         GuestController guestController = new GuestController();
-        if(guestController.search(id).isEmpty()){
+        if (guestController.search(id).isEmpty()) {
             //JOptionPane.showMessageDialog(this, "No se encontraron resultados con ese ID");
             new ToastInfo("Sin resultados");
             return;
@@ -416,9 +392,9 @@ public class Busqueda extends JFrame {
                     int cantidadEliminada = reservationController.delete_reservation(id);
                     model.removeRow(table.getSelectedRow());
                     //JOptionPane.showMessageDialog(this, cantidadEliminada + " Item eliminado con éxito!");
-                    new ToastInfo(cantidadEliminada +" eliminado con éxito!");
+                    new ToastInfo(cantidadEliminada + " eliminado con éxito!");
                 }, () ->  //JOptionPane.showMessageDialog(this, "Por favor, elije un item")//
-                        new ToastInfo("Elige un item") );
+                        new ToastInfo("Elige un item"));
     }
 
     private void deleteGuest(JTable table, DefaultTableModel model) {
@@ -434,7 +410,7 @@ public class Busqueda extends JFrame {
                     int cantidadEliminada = guestController.delete_guest(id);
                     model.removeRow(table.getSelectedRow());
                     //JOptionPane.showMessageDialog(this, cantidadEliminada + " Item eliminado con éxito!");
-                    new ToastInfo(cantidadEliminada +" eliminado con éxito!");
+                    new ToastInfo(cantidadEliminada + " eliminado con éxito!");
                 }, () ->//JOptionPane.showMessageDialog(this, "Por favor, elije un item")
                         new ToastInfo("Elige un item"));
     }
@@ -456,7 +432,7 @@ public class Busqueda extends JFrame {
                     ReservationController reservationController = new ReservationController();
                     int cantidadActualizada = reservationController.update_reservation(id, check_in, check_out, value, payment_method);
                     //JOptionPane.showMessageDialog(this, cantidadActualizada + " Item actualizado con éxito!");
-                    new ToastInfo(cantidadActualizada +" actualizado con éxito!");
+                    new ToastInfo(cantidadActualizada + " actualizado con éxito!");
                 }, () -> //JOptionPane.showMessageDialog(this, "Por favor, elije un item")
                         new ToastInfo("Elige un item"));
     }
@@ -480,7 +456,7 @@ public class Busqueda extends JFrame {
                     int cantidadActualizada = guestController.update_guest(id, first_name, last_name, date_of_birth,
                             nationality, telephone, reservation_id);
                     //JOptionPane.showMessageDialog(this, cantidadActualizada + " Item actualizado con éxito!");
-                    new ToastInfo(cantidadActualizada +" actualizado con éxito!");
+                    new ToastInfo(cantidadActualizada + " actualizado con éxito!");
                 }, () -> //JOptionPane.showMessageDialog(this, "Por favor, elije un item")
                         new ToastInfo("Elige un item"));
     }
